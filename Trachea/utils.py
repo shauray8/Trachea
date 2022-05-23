@@ -38,14 +38,26 @@ def plot_waveform(waveform, sample_rate, title="Waveform", xlim=None, ylim=None)
     plt.show(block=False)
     time.sleep(10)
 
+def show():
+    waveform, sample_rate = torchaudio.load(wavefile)
+    print(len(waveform[0]))
+    plt.plot(waveform[0:100])
+    plt.show()
+
+def load(fn):
+    lis = open(fn,"r",encoding="utf-8").read().strip().split("\n")
+    wav_file, trans = lis[0].strip().replace("\t","").split("|")[:-1]
+    print(wav_file, trans)
+    
+
+
 if __name__ == "__main__":
     #readme = pd.read_csv("E:/data/LJSpeech-1.1/metadata.csv", header=None)
     #print(readme.head()[1])
 
-    fn =  "E:/data/LJSpeech-1.1/metadata.csv"
+    fn =  "E:/data/LJSpeech-1.1/metadata_cp.txt"
     wavefile = "E:/data/LJSpeech-1.1/wavs/LJ001-0001.wav"
-    #lis = open(fn,"r").read().strip().split("\n")
-    #print(lis)
+    load(fn)
 
     #with open(fn, newline='') as csvfile:
     #    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -56,10 +68,9 @@ if __name__ == "__main__":
     metadata = torchaudio.info(wavefile)
     print(metadata)
 
-    waveform, sample_rate = torchaudio.load(wavefile)
-    print(len(waveform[0]))
-    plt.plot(waveform[0:100])
-    plt.show()
+
+
+
 
 
 
