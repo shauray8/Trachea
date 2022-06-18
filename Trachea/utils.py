@@ -7,6 +7,8 @@ import torchaudio
 import torch
 import matplotlib.pyplot as plt
 import time
+import librosa 
+import librosa.display
 
 def wavw():
     wavefile = wave.open("E:/data/LJSpeech-1.1/wavs/LJ001-0001.wav","r")
@@ -44,11 +46,33 @@ def show():
     plt.plot(waveform[0:100])
     plt.show()
 
+## outputs text from a different file
 def load(fn):
     lis = open(fn,"r",encoding="utf-8").read().strip().split("\n")
     wav_file, trans = lis[0].strip().replace("\t","").split("|")[:-1]
     print(wav_file, trans)
     
+
+def librosa_pre(wavefile):
+    tt, sr= librosa.load(wavefile)
+    #librosa.display.waveshow(tt, sr=sr)
+    D = librosa.amplitude_to_db(np.abs(librosa.stft(tt)), ref=np.max)
+    #M = librosa.feature.melspectrogram(y=tt, sr=sr, hop_length=512)
+    img = librosa.display.specshow(D, y_axis='linear', x_axis='time',
+                               sr=sr)
+    plt.show()
+    print(tt)
+    pass
+
+def return_MFCC(wavefile):
+    y, sr = librosa.load(wavefile)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr)
+    img = librosa.display.specshow(mfccs, x_axis='time')
+    plt.show()
+    pass
+
+def return_spec(wavefile):
+    pass
 
 
 if __name__ == "__main__":
@@ -66,7 +90,10 @@ if __name__ == "__main__":
     #        break
 
     metadata = torchaudio.info(wavefile)
-    print(metadata)
+    #print(metadata)
+    return_MFCC(wavefile)
+
+    ## convert the audio signal to spectrogram or MFCC whatever feels good and then feed it through a deep neural network and train it against tokeinized sentences 
 
 
 
