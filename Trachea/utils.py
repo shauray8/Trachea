@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     metadata = torchaudio.info(wavefile)
     #print(metadata)
-    return_MFCC(wavefile)
+    librosa_pre(wavefile)
 
     ## convert the audio signal to spectrogram or MFCC whatever feels good and then feed it through a deep neural network and train it against tokeinized sentences 
 
