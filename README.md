@@ -4,6 +4,7 @@ Making computers listen ! I was working way to much on making computer see so I 
 <br>
 I can use cnn for this (MFCC's') <br>
 convert wav files to spectrograms and use them to train the model (??) 
+I think converting audio to spectrograms it should give kind of good results 
 
 ### TODO
 * learn about speech (cause I know nothing about it)

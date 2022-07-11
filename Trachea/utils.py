@@ -10,6 +10,18 @@ import time
 import librosa 
 import librosa.display
 
+class dataset(object):
+    def __init__(self, config, vocab, text_col, audio_path):
+        self.config = config
+        self.vocab = vocab
+        self.text_col = text_col
+        self.audio_path = audio_path
+
+    def prepare_data(self, batch: set) -> batch:
+        pass
+
+        
+
 def wavw():
     wavefile = wave.open("E:/data/LJSpeech-1.1/wavs/LJ001-0001.wav","r")
     length = wavefile.getnframes()
@@ -71,7 +83,9 @@ def return_MFCC(wavefile):
     plt.show()
     pass
 
+## return mel spectrograms and feed them to the network which outputs the text (not exactly)
 def return_spec(wavefile):
+
     pass
 
 
