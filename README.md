@@ -1,4 +1,7 @@
 # Trachea
+
+<img src="./assets/logo.jpg"></img>
+
 Making computers listen ! I was working way to much on making computer see so I figured out why not make them listen as well
 
 <br>
