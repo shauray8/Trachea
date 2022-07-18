@@ -10,16 +10,16 @@ import time
 import librosa 
 import librosa.display
 
-class dataset(object):
-    def __init__(self, config, vocab, text_col, audio_path):
-        self.config = config
-        self.vocab = vocab
-        self.text_col = text_col
-        self.audio_path = audio_path
-
-    def prepare_data(self, batch: set) -> batch:
-        pass
-
+#class dataset(object):
+#    def __init__(self, config, vocab, text_col, audio_path):
+#        self.config = config
+#        self.vocab = vocab
+#        self.text_col = text_col
+#        self.audio_path = audio_path
+#
+#    def prepare_data(self, batch: set) -> batch:
+#        pass
+#
         
 
 def wavw():
@@ -84,9 +84,17 @@ def return_MFCC(wavefile):
     pass
 
 ## return mel spectrograms and feed them to the network which outputs the text (not exactly)
+## using pytorch instead
 def return_spec(wavefile):
 
-    pass
+    fig, ax = plt.subplots()
+    tt, sr= librosa.load(wavefile)
+    spectrogram = librosa.feature.melspectrogram(tt)
+    img = librosa.display.specshow(spectrogram)
+    fig.colorbar(img, ax=ax, format='%+2.0f dB')
+    ax.set(title='Mel-frequency spectrogram')
+    plt.show()
+    return
 
 
 if __name__ == "__main__":
@@ -104,8 +112,21 @@ if __name__ == "__main__":
     #        break
 
     metadata = torchaudio.info(wavefile)
+    waveform, sample_rate = torchaudio.load(wavefile, normalize=True)
     #print(metadata)
-    librosa_pre(wavefile)
+    #librosa_pre(wavefile)
+    #plot_waveform(waveform, sample_rate)
+    #wave = return_spec(wavefile)
+
+    transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
+    mel_specgram = transform(torch.tensor(waveform[None]).type(torch.float32))
+    print(mel_specgram.shape)
+    plt.imshow(np.log10(mel_specgram[0][0]))
+    plt.show()
+    
+    
+
+
 
     ## convert the audio signal to spectrogram or MFCC whatever feels good and then feed it through a deep neural network and train it against tokeinized sentences 
 
