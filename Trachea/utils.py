@@ -2,13 +2,10 @@ import numpy as np
 import pandas as pd
 import os
 import csv
-import wave
 import torchaudio
 import torch
 import matplotlib.pyplot as plt
 import time
-import librosa 
-import librosa.display
 
 #class dataset(object):
 #    def __init__(self, config, vocab, text_col, audio_path):
@@ -20,6 +17,27 @@ import librosa.display
 #    def prepare_data(self, batch: set) -> batch:
 #        pass
 #
+
+class wav_to_vec:
+    def __init__(self, wavefile):
+        self.wavefile = wavefile
+        self.waveform,self.smaple_rate = torchaudio.load(self.wavefile, normalize=True)
+
+    def __repr__(self) -> torch.tensor:
+        spec_data = self.convert_to_spectrogram()
+        return spec_data
+
+    def __str__(self):
+        return
+
+    def convert_to_spectrogram(self) -> torch.tensor:
+        transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
+        mel_specgram = transform(self.waveform[None].type(torch.float32))
+        mel_specgram = mel_specgram.reshape(1,80,-1)
+        return mel_specgram
+
+    def shape(self):
+        return type(self)
         
 
 def wavw():
@@ -97,13 +115,26 @@ def return_spec(wavefile):
     return
 
 
+#def convert_to_spectrogram(waveform:torch.tensor,sample_rate:torch.tensor):
+#
+#    transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
+#    mel_specgram = transform(waveform[None].type(torch.float32))
+#    mel_specgram = mel_specgram.reshape(1,80,-1)
+#    return mel_specgram
+#    #print("log",torch.log10(mel_specgram).reshape(80,-1).shape)
+#    #plt.imshow(torch.log10(mel_specgram))
+#    #plt.show()
+    
+
+
 if __name__ == "__main__":
     #readme = pd.read_csv("E:/data/LJSpeech-1.1/metadata.csv", header=None)
     #print(readme.head()[1])
 
     fn =  "E:/data/LJSpeech-1.1/metadata_cp.txt"
-    wavefile = "E:/data/LJSpeech-1.1/wavs/LJ001-0001.wav"
-    load(fn)
+    wavefile = "E:/data/LJSpeech-1.1/wavs/LJ001-0002.wav"
+#    load(fn)
+
 
     #with open(fn, newline='') as csvfile:
     #    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -118,12 +149,11 @@ if __name__ == "__main__":
     #plot_waveform(waveform, sample_rate)
     #wave = return_spec(wavefile)
 
-    transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
-    mel_specgram = transform(torch.tensor(waveform[None]).type(torch.float32))
-    print(mel_specgram.shape)
-    plt.imshow(np.log10(mel_specgram[0][0]))
-    plt.show()
-    
+
+    a = wav_to_vec(wavefile)
+    print(a)
+
+
     
 
 
