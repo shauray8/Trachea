@@ -27,9 +27,6 @@ class wav_to_vec:
         spec_data = self.convert_to_spectrogram()
         return spec_data
 
-    def __str__(self):
-        return
-
     def convert_to_spectrogram(self) -> torch.tensor:
         transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
         mel_specgram = transform(self.waveform[None].type(torch.float32))
