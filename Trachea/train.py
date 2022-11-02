@@ -88,6 +88,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using {device=} [{time.strftime('%d-%m %H:%M')}]")
 #device = torch.device("cpu")
 
+## ----------------------- Keeping it all clean and stuff ----------------------- ##
+
 def main():
     global args, best_MSE
     main_epoch = 0
@@ -164,7 +166,7 @@ def main():
 ## --------------------- Checking and selecting a optimizer [SGD, ADAM] --------------------- ##
 
 
-    ## WHY would I use SGD over ADAM ??? is there any case in which SGD performs better then ADAM ? or better use crossentropy !
+    ## WHY would I use SGD over ADAM ??? is there any case in which SGD performs better then ADAM ? or better use crossentropy ! (what is fused adam)
     if args.solver not in ['adam', 'sgd']:
         print("=> enter a supported optimizer")
         return 
@@ -185,10 +187,10 @@ def main():
 
 ## --------------------- Scheduler and Loss Function --------------------- ##
 
-    ## what is multistepLR ??
+    ## what is multistepLR ?? (use one cycle lr)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.milestones, gamma=.5)
 
-    ## MSE LOSS ?? -> maybe use something like 
+    ## MSE LOSS ?? -> maybe use something like ctcloss (used when we need to allign between sequences)
     yaw_loss = nn.MSELoss()
     pitch_loss = nn.MSELoss()
 
@@ -237,10 +239,12 @@ def train(train_loader, model, optimizer, epoch, train_writer, yaw_loss, pitch_l
 
     losses = []
     model.train()
+    ## use monotonic instead
     end = time.time()
 
 ## --------------------- Training --------------------- ##
 
+    ## change the loop to fit the new image data
     for i, (input, yaw, pitch) in enumerate(train_loader):
         start_time = time.time()
         yaw = yaw.to(device)
@@ -314,3 +318,4 @@ def validation(val_loader, model, epoch, output_writers, yaw_loss, pitch_loss):
         
 if __name__ == "__main__":
     torch.cuda.empty_cache()
+
