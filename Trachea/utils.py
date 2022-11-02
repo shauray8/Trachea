@@ -143,12 +143,12 @@ if __name__ == "__main__":
     waveform, sample_rate = torchaudio.load(wavefile, normalize=True)
     #print(metadata)
     #librosa_pre(wavefile)
-    #plot_waveform(waveform, sample_rate)
+    plot_waveform(waveform, sample_rate)
     #wave = return_spec(wavefile)
+    #print(wave)
 
 
-    a = wav_to_vec(wavefile)
-    print(a)
+#    a = wav_to_vec(wavefile)
 
 
     

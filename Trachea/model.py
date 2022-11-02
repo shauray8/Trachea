@@ -36,8 +36,21 @@ Dot product attention -->
 
 """
 
-def main():
-    pass
+def flownetc(data=None):
+    """FlowNetS model architecture from the
+    Learning Optical Flow with Convolutional Networks" paper (https://arxiv.org/abs/1504.06852)
+    """
+    model = FlowNet(bn=False)
+    if data is not None:
+        model.load_state_dict(data['state_dict'])
+    return model
 
-if __name__ == "__main__":
-    main()
+def flownetc_bn(data=None):
+    """FlowNetS model architecture from the
+    Learning Optical Flow with Convolutional Networks" paper (https://arxiv.org/abs/1504.06852)
+    """
+    model = FlowNet(bn=True)
+    if data is not None:
+        model.load_state_dict(data['state_dict'])
+    return model
+
