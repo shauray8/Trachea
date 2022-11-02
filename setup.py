@@ -15,13 +15,13 @@ setup(
   url = 'https://github.com/shauray8/Trachea',
   keywords = ['deep learning',"listen", 'machine learning'],
   install_requires=[
-      'numpy',
+      "numpy",
       'tqdm',
       'torch',
       'torchvision',
       'torchaudio',
       'pillow',
       "opencv2",
-      "tensorboard".
+      "tensorboard",
   ],
 )
