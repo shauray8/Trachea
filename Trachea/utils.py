@@ -14,6 +14,89 @@ XMAX = 1600
 YMAX = 250
 SAMPLE_RATE = 22050
 
+class ListDataset(Dataset):
+    def __init__(self, root, transform=None):
+
+        self.root = root
+        self.transform = transform
+
+    def __getitem__(self, index):
+        
+        inputs, yaw, pitch = self.path_list[index]
+        yaw, pitch = onehot_vector(yaw, self.yaw_classes), onehot_vector(pitch, self.pitch_classes)
+        inputs, yaw, pitch = loader(inputs, yaw, pitch)
+
+        if self.transform is not None:
+            inputs[0] = self.transform(inputs[0])
+            inputs[1] = self.transform(inputs[1])
+
+        return inputs, np.float32(yaw), np.float32(pitch)
+
+    def __len__(self):
+        return len(self.path_list)
+
+def DATA_LOADER(root, split):        
+    img_data = []
+    mode = 5
+    yaw_array = []
+    pitch_array = []
+    for i in range(mode):
+        input_img = (glob.glob(os.path.join(data_root, "wavs","*.wav"))
+        target_num = get_metadata()
+        drive_img = []
+
+        w = open(target_num[0],'r')
+        drive_img.append(w.read())
+        drive_img = drive_img[0].split("\n")
+    
+        for i in range(len(input_img)-1):
+            yaw, pitch = drive_img[i].split(" ")
+            yaw = 0 if yaw == "nan" else yaw
+            pitch = 0 if pitch == "nan" else pitch
+            img_data.append([[ input_img[i], input_img[i+1] ], float(yaw), float(pitch) ])
+            yaw_array.append(float(yaw))
+            pitch_array.append(float(pitch))
+            
+## ---------------- initializing class ararys with value 0. ---------------- ##
+
+    yaw_array = np.sort(yaw_array)
+    pitch_array = np.sort(pitch_array)
+    yaw_classes, pitch_classes = [0.], [0.]
+
+## ---------------- breaking into classes of 100 each ---------------- ##
+
+    for yaw in range(len(yaw_array)):
+        if yaw % 100 == 0 and yaw_array[yaw] > 0:
+            yaw_classes.append(yaw_array[yaw])
+    yaw_classes.append(1.)
+
+    for pitch in range(len(pitch_array)):
+        if pitch % 100 == 0 and pitch_array[pitch] > 0:
+            pitch_classes.append(pitch_array[pitch])
+    pitch_classes.append(1.)
+
+## ---------------- train, validation split ---------------- ##
+
+    train, test = [], []
+    if split is not None:
+        for sample in range( int(split*len(img_data)) ):
+            train.append(img_data[sample])
+
+        for sample in range( int(split*len(img_data)), len(img_data) ):
+            test.append(img_data[sample])
+
+    return train, test, yaw_classes, pitch_classes
+
+## use transformed data to transform it and then return it to the data loader no fancy stuff 
+
+def Transformed_data(data_root, transform=None, split=None):
+    train, test, speech = DATA_LOADER(data_root, split)
+    train_dataset = ListDataset(data_root, train, speech, transform)
+    test_dataset = ListDataset(data_root, test, speech, transform)
+
+    return train_dataset, test_dataset
+
+
 #class dataset(object):
 #    def __init__(self, config, vocab, text_col, audio_path):
 #        self.config = config
