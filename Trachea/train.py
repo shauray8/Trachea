@@ -131,6 +131,11 @@ def main():
             transforms.Normalize(mean=[.45,.432,.411], std=[1,1,1]),
         ])
 
+    audio_transform = transforms.Compose([
+            torchaudio.transforms.FrequencyMasking(freq_mask_params=15),
+            torchaudio.transforms.TimeMasking(time_mask_params=35),
+        ])
+
 ## --------------------- loading the dataset --------------------- ##
 
     print(f"=> fetching spectograms from audio samples {args.data}") 

@@ -7,6 +7,13 @@ import torch
 import matplotlib.pyplot as plt
 import time
 
+##----------------------- Gloabal Variables -----------------------##
+DATASET = "E:\data\LJSpeech-1.1"
+CHARSET = " abcdefghijklmnopqrstuvwxyz,.'"
+XMAX = 1600
+YMAX = 250
+SAMPLE_RATE = 22050
+
 #class dataset(object):
 #    def __init__(self, config, vocab, text_col, audio_path):
 #        self.config = config
@@ -122,6 +129,27 @@ def return_spec(wavefile):
 #    #plt.imshow(torch.log10(mel_specgram))
 #    #plt.show()
     
+def get_metadata():
+    meta = []
+    with open(os.path.join(DATASET, "metadata_cp.txt"), encoding="utf8") as txtfile:
+        corpus = txtfile.read().split("\n")
+        for row in corpus:
+            row = row.split("|")
+            tokens = [CHARSET.index(c)+1 for c in row[1].lower() if c in CHARSET]
+            if len(tokens) <= YMAX:
+                meta.append((os.path.join(DATASET, 'wavs', row[0]+".wav"), tokens))
+    print("got metadata", len(meta))
+    return meta
+
+buffer = {}
+def load_lj(wav_file):
+    if wav_file in buffer:
+        return buffer[wav_file]
+    waveform, sample_rate = torchaudio.load(os.path.join(DATASET,"wavs" ,wav_file))
+    transform = torchaudio.transforms.MelSpectrogram(sample_rate,n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
+    spectrogram = transform(waveform)
+    buffer[wav_file] = spectrogram[0].T
+    return spectrogram[0].T
 
 
 if __name__ == "__main__":
