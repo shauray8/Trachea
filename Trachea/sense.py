@@ -2,34 +2,37 @@ import torch
 import torchaudio
 import matplotlib.pyplot as plt
 import os
-import csv
-import pandas as pd
-
-def x():
-    x = "E:\data\LJSpeech-1.1\wavs\LJ001-0001.wav"
-    wave, sam = torchaudio.load(x)
-    trans = torchaudio.transforms.MelSpectrogram(sam)
-    sepc = trans(wave)
-    plt.imshow((sepc[0].T))
-    plt.show()
-    print(wave[0][:1], sam)
 
 DATASET = "E:\data\LJSpeech-1.1"
 CHARSET = ' abcdefghijklmnopqrstuvwxyz,.'
 XMAX = 870    # about 10 seconds
 YMAX = 250
+SAMPLE_RATE = 
 
-def file():
-    ret = []
-    with open(os.path.join(DATASET, "metadata_cp.txt"), encoding="utf8") as txt:
-        row = txt.read().split("\n")
-        for more in row:
-            get = more.split("|")
-            answer = [CHARSET.index(c)+1 for c in get[1].lower() if c in CHARSET]
-            if len(answer) <= YMAX:
-                ret.append((os.path.join(DATASET, 'wavs', get[0]+".wav"), answer))
-    print("got metadata", len(ret))
-    return ret
+def get_metadata():
+    meta = []
+    with open(os.path.join(DATASET, "metadata_cp.txt"), encoding="utf8") as txtfile:
+        corpus = txtfile.read().split("\n")
+        for row in corpus:
+            row = row.split("|")
+            tokens = [CHARSET.index(c)+1 for c in row[1].lower() if c in CHARSET]
+            if len(tokens) <= YMAX:
+                meta.append((os.path.join(DATASET, 'wavs', row[0]+".wav"), tokens))
+    print("got metadata", len(meta))
+    return meta
 
-ret = file()
+buffer = {}
+def load_lj(wav_file):
+    if wav_file in buffer:
+        return buffer[wav_file]
+    waveform, sample_rate = torchaudio.load(os.path.join(DATASET,"wavs" ,wav_file))
+    transform = torchaudio.transforms.MelSpectrogram(sample_rate,n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
+    spectrogram = transform(waveform)
+    buffer[wav_file] = spectrogram[0].T
+    return spectrogram[0].T
+
+load_lj("LJ001-0001.wav")
+print(buffer)
+
+
 
