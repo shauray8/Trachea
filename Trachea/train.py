@@ -23,9 +23,9 @@ import model
 
 ## -------------------- Gives out names of callable functions -------------------- ##
 def callable():
-    kwargs = sorted(name for name in FlownetCorr.__dict__
+    kwargs = sorted(name for name in Model.__dict__
         if name.islower() and not name.startswith("__")
-        and callable(FlownetCorr.__dict__[name]))
+        and callable(Model.__dict__[name]))
     return kwargs
 
 ## -------------------- Argument Parser just for simplicity -------------------- ##
@@ -253,19 +253,17 @@ def train(train_loader, model, optimizer, epoch, train_writer, yaw_loss, pitch_l
     ## change the loop to fit the new image data
 
     for samples in (t:=tqdm(val_batches)):
+        specgram = load_lj(samples)
+        target = meta[] # get it somehow
         start_time = time.time()
-        yaw = yaw.to(device)
-        pitch = pitch.to(device)
-        inputs = torch.cat(input,1).to(device)
+        specgram = specgram.to(device)
+        target = target.to(device)
 
-        pred_yaw, pred_pitch = model(inputs)
+        pred_speech, _ = model(specgram, torch.tensor([specgram.shape[0]])
 
-        yaw_MSE = yaw_loss(pred_yaw, yaw)
+        CTC = CTC_loss(pred_speech, target)
         
-        pitch_MSE = pitch_loss(pred_pitch, pitch)
-        loss = (yaw_MSE + pitch_MSE)*.5
-
-        losses.append((float(yaw_MSE) + float(pitch_MSE)) *.5)
+        losses.append(CTC)
         train_writer.add_scalar('train_loss', (float(yaw_MSE.item()+pitch_MSE.item())*.5))
 
         optimizer.zero_grad()
@@ -295,16 +293,16 @@ def validation(val_loader, model, epoch, output_writers, yaw_loss, pitch_loss):
     model.eval()
     
     end = time.time()
-    for i, (input, yaw, pitch) in enumerate(val_loader):
-        yaw = yaw.to(device)
-        pitch = pitch.to(device)
-        input = torch.cat(input,1).to(device)
+    for samples in (t:=tqdm(val_batches)):
+        specgram = load_lj(samples)
+        target = meta[] # get it somehow
+        start_time = time.time()
+        specgram = specgram.to(device)
+        target = target.to(device)
 
-        pred_yaw, pred_pitch = model(input)
+        pred_speech, _ = model(specgram, torch.tensor([specgram.shape[0]])
 
-        yaw_MSE = yaw_loss(pred_yaw, yaw)*.5
-        pitch_MSE = pitch_loss(pred_pitch, pitch)*.5
-        loss = yaw_MSE + pitch_MSE
+        CTC = CTC_loss(pred_speech, target)
 
         end = time.time()
 
