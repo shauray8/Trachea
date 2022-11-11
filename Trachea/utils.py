@@ -172,17 +172,6 @@ def load(fn):
     print(wav_file, trans)
     
 
-def librosa_pre(wavefile):
-    tt, sr= librosa.load(wavefile)
-    #librosa.display.waveshow(tt, sr=sr)
-    D = librosa.amplitude_to_db(np.abs(librosa.stft(tt)), ref=np.max)
-    #M = librosa.feature.melspectrogram(y=tt, sr=sr, hop_length=512)
-    img = librosa.display.specshow(D, y_axis='linear', x_axis='time',
-                               sr=sr)
-    plt.show()
-    print(tt)
-    pass
-
 def return_MFCC(wavefile):
     y, sr = librosa.load(wavefile)
     mfccs = librosa.feature.mfcc(y=y, sr=sr)
@@ -190,10 +179,7 @@ def return_MFCC(wavefile):
     plt.show()
     pass
 
-## return mel spectrograms and feed them to the network which outputs the text (not exactly)
-## using pytorch instead
 def return_spec(wavefile):
-
     fig, ax = plt.subplots()
     tt, sr= librosa.load(wavefile)
     spectrogram = librosa.feature.melspectrogram(tt)
@@ -203,17 +189,6 @@ def return_spec(wavefile):
     plt.show()
     return
 
-
-#def convert_to_spectrogram(waveform:torch.tensor,sample_rate:torch.tensor):
-#
-#    transform = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
-#    mel_specgram = transform(waveform[None].type(torch.float32))
-#    mel_specgram = mel_specgram.reshape(1,80,-1)
-#    return mel_specgram
-#    #print("log",torch.log10(mel_specgram).reshape(80,-1).shape)
-#    #plt.imshow(torch.log10(mel_specgram))
-#    #plt.show()
-    
 def get_metadata():
     meta = []
     with open(os.path.join(DATASET, "metadata_cp.txt"), encoding="utf8") as txtfile:
@@ -262,10 +237,3 @@ if __name__ == "__main__":
 
 
 #    a = wav_to_vec(wavefile)
-
-
-    
-
-
-
-    ## convert the audio signal to spectrogram or MFCC whatever feels good and then feed it through a deep neural network and train it against tokeinized sentences 

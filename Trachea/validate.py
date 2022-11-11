@@ -1,5 +1,4 @@
 ## testing trained model
-## copy validation code here 
 import numpy as np 
 import torch
 import torchaudio, pyaudio
