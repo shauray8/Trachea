@@ -17,7 +17,8 @@ def to_text(x):
 
 model.eval()
 
-val = load_lj("E:\data\LJSpeech-1.1\wavs\LJ001-0011.wav")
+data = "E:\data\LJSpeech-1.1\wavs\LJ011-0011.wav"
+val = load_lj(data)
 plt.imshow(torch.concat([torch.log10(val).T, torch.log10(val).T], axis=1))
 print(val[None].shape)
 mguess = model(val[None], torch.tensor([val.shape[0]]))[0]
