@@ -7,6 +7,8 @@ import torch
 import matplotlib.pyplot as plt
 import time
 
+from torch.utils.data import Dataset
+
 ##----------------------- Gloabal Variables -----------------------##
 DATASET = "E:\data\LJSpeech-1.1"
 CHARSET = " abcdefghijklmnopqrstuvwxyz,.'"
@@ -41,8 +43,8 @@ def DATA_LOADER(root, split):
     yaw_array = []
     pitch_array = []
     for i in range(mode):
-        input_img = (glob.glob(os.path.join(data_root, "wavs","*.wav"))
-        target_num = get_metadata()
+        #input_img = (glob.glob(os.path.join(data_root, "wavs","*.wav"))
+        #target_num = get_metadata()
         drive_img = []
 
         w = open(target_num[0],'r')
@@ -230,8 +232,8 @@ def load_lj(wav_file):
     if sample_rate not in buffer:
         hop_length = int(sample_rate/(1000/10))
         win_length = int(sample_rate/(1000/25))
-        mel_transform[sample_rate] = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=win_length, win_length=win_length, hop_length=hop_length, n_mels=80)
-    mel_specgram = mel_transform[sample_rate](waveform)
+        buffer[sample_rate] = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=win_length, win_length=win_length, hop_length=hop_length, n_mels=80)
+    mel_specgram = buffer[sample_rate](waveform)
     return mel_specgram[0].T
 
 

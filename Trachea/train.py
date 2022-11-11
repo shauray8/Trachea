@@ -91,7 +91,7 @@ print(f"Using {device=} [{time.strftime('%d-%m %H:%M')}]")
 ## ----------------------- Keeping it all clean and stuff ----------------------- ##
 
 def main():
-    global args, best_MSE
+    global args, best_CTC
     main_epoch = 0
     args = parser.parse_args()
     timestamp = datetime.datetime.now().strftime("%m-%d-%H-%M")
@@ -102,6 +102,7 @@ def main():
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
+    ## maybe use something more like wandb
     train_writer = SummaryWriter(os.path.join(save_path, "train"))
     test_writer = SummaryWriter(os.path.join(save_path, "test"))
     output_writers = []
@@ -155,7 +156,7 @@ def main():
 ## --------------------- Importing the MODEL (some kind of transformer maybe) --------------------- ##
     
     ## variable names !
-    model = flownetc().to(device)
+    model = Rec().to(device)
 
     if args.pretrained is not None:
         with open(args.pretrained, 'rb') as pickle_file:
@@ -250,7 +251,8 @@ def train(train_loader, model, optimizer, epoch, train_writer, yaw_loss, pitch_l
 ## --------------------- Training --------------------- ##
 
     ## change the loop to fit the new image data
-    for i, (input, yaw, pitch) in enumerate(train_loader):
+
+    for samples in (t:=tqdm(val_batches)):
         start_time = time.time()
         yaw = yaw.to(device)
         pitch = pitch.to(device)
