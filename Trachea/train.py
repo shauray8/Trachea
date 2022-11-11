@@ -200,20 +200,11 @@ def main():
     yaw_loss = nn.MSELoss()
     pitch_loss = nn.MSELoss()
 
-
-## --------------------- Training Loop --------------------- ##
-    
+## --------------------- Validation Step (always validate before training) --------------------- ##
+        
     print("=> training go look tensorboard for more stuff")
     for epoch in (r := trange(args.start_epoch, args.epochs)):
 
-        avg_loss_MSE, train_loss_MSE, display = train(train_loader, model,
-                optimizer, epoch+main_epoch, train_writer, yaw_loss, pitch_loss)
-        
-        scheduler.step()
-        train_writer.add_scalar('train mean MSE', avg_loss_MSE, epoch)
-
-## --------------------- Validation Step --------------------- ##
-        
         with torch.no_grad():
             MSE_loss_val, display_val = validation(val_loader, model, epoch, output_writers, yaw_loss, pitch_loss)
         test_writer.add_scalar('validation mean MSE', MSE_loss_val, epoch)
@@ -223,6 +214,14 @@ def main():
 
         is_best = MSE_loss_val < best_MSE
         best_MSE = min(MSE_loss_val, best_MSE)
+
+## --------------------- Training Loop --------------------- ##
+    
+        avg_loss_MSE, train_loss_MSE, display = train(train_loader, model,
+                optimizer, epoch+main_epoch, train_writer, yaw_loss, pitch_loss)
+        
+        scheduler.step()
+        train_writer.add_scalar('train mean MSE', avg_loss_MSE, epoch)
 
 ## --------------------- Saving on every epoch --------------------- ##
 
