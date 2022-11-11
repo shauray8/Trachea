@@ -31,6 +31,10 @@ def load_lj(wav_file):
     buffer[wav_file] = spectrogram[0].T
     return spectrogram[0].T
 
+def dataloader():
+    pass
+
+
 load_lj("LJ001-0001.wav")
 print(buffer)
 

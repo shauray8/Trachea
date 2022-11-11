@@ -226,13 +226,13 @@ def get_metadata():
 
 buffer = {}
 def load_lj(wav_file):
-    if wav_file in buffer:
-        return buffer[wav_file]
-    waveform, sample_rate = torchaudio.load(os.path.join(DATASET,"wavs" ,wav_file))
-    transform = torchaudio.transforms.MelSpectrogram(sample_rate,n_fft=1024, win_length=1024, hop_length=256, n_mels=80)
-    spectrogram = transform(waveform)
-    buffer[wav_file] = spectrogram[0].T
-    return spectrogram[0].T
+    waveform, sample_rate = torchaudio.load(wav_file, normalize=True)
+    if sample_rate not in buffer:
+        hop_length = int(sample_rate/(1000/10))
+        win_length = int(sample_rate/(1000/25))
+        mel_transform[sample_rate] = torchaudio.transforms.MelSpectrogram(sample_rate, n_fft=win_length, win_length=win_length, hop_length=hop_length, n_mels=80)
+    mel_specgram = mel_transform[sample_rate](waveform)
+    return mel_specgram[0].T
 
 
 if __name__ == "__main__":
